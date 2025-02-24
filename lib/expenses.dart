@@ -1,3 +1,4 @@
+import 'package:expense_app/widgets/chart/chart.dart';
 import 'package:expense_app/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_app/models/expense.dart';
 import 'package:expense_app/widgets/new_expense.dart';
@@ -30,6 +31,7 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
+      useSafeArea: true,
       isScrollControlled: true,
       context: context,
       builder: (ctx) {
@@ -70,6 +72,8 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     Widget mainContent = const Center(
       child: Text('No expense found!. Start add expense!'),
     );
@@ -80,20 +84,36 @@ class _ExpensesState extends State<Expenses> {
           IconButton(onPressed: _openAddExpenseOverlay, icon: Icon(Icons.add)),
         ],
       ),
-      body: Column(
-        children: [
-          Text('Hai Bosss....'),
-          Expanded(
-            child:
-                _registerExpenses.isNotEmpty
-                    ? ExpensesList(
-                      expenses: _registerExpenses,
-                      onRemoveExpense: _removeExpense,
-                    )
-                    : mainContent,
-          ),
-        ],
-      ),
+      body:
+          width < 600
+              ? Column(
+                children: [
+                  Chart(expenses: _registerExpenses),
+                  Expanded(
+                    child:
+                        _registerExpenses.isNotEmpty
+                            ? ExpensesList(
+                              expenses: _registerExpenses,
+                              onRemoveExpense: _removeExpense,
+                            )
+                            : mainContent,
+                  ),
+                ],
+              )
+              : Row(
+                children: [
+                  Expanded(child: Chart(expenses: _registerExpenses)),
+                  Expanded(
+                    child:
+                        _registerExpenses.isNotEmpty
+                            ? ExpensesList(
+                              expenses: _registerExpenses,
+                              onRemoveExpense: _removeExpense,
+                            )
+                            : mainContent,
+                  ),
+                ],
+              ),
     );
   }
 }
